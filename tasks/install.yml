@@ -1,0 +1,73 @@
+---
+- name: Install required packages
+  package:
+    name: '{{ item }}'
+    state: present
+  become: yes
+  with_items: '{{ snapraid_packages }}'
+
+- name: Ensure dirs exists with correct perms
+  file:
+    dest: "{{ dirpath }}"
+    state: directory
+    owner: "{{ snapraid_owner }}"
+    group: "{{ snapraid_group }}"
+    recurse: no
+  become: yes
+  with_items:
+    - "{{ snapraid_src_dir }}"
+    - "{{ snapraid_bin_dir }}"
+  loop_control:
+    loop_var: dirpath
+
+- name: Get latest version number
+  block:
+    - name: Get latest github info
+      uri:
+        url: https://api.github.com/repos/amadvance/snapraid/releases/latest
+        method: GET
+        return_content: yes
+      register: snapraid_github_info
+      check_mode: no
+    - name: Set/modify fact snapraid_version
+      set_fact:
+        snapraid_version: "{{ (snapraid_github_info.content|from_json).tag_name[1:] }}"
+      check_mode: no
+  when: snapraid_version == 'latest'
+
+- name: install snapraid - decompress package
+  unarchive:
+    src: "https://github.com/amadvance/snapraid/releases/download/v{{ snapraid_version }}/{{ snapraid_file }}.tar.gz"
+    dest: "{{ snapraid_src_dir}}"
+    copy: no
+    creates: '{{ snapraid_src_dir}}/{{ snapraid_file }}'
+  become_user: "{{ snapraid_owner }}"
+
+- name: Check if the binary already exists
+  stat:
+    path: '{{ snapraid_src_dir }}/{{ snapraid_file }}/snapraid'
+  register: snapraid_stat_result
+
+- name: Configure source
+  become_user: "{{ snapraid_owner }}"
+  shell: './configure'
+  args:
+    chdir: '{{ snapraid_src_dir }}/{{ snapraid_file }}'
+    creates: 'Makefile'
+  when: snapraid_stat_result.stat.exists == False 
+
+- name: Build the source
+  become_user: "{{ snapraid_owner }}"
+  make:
+    chdir: '{{ snapraid_src_dir }}/{{ snapraid_file }}'
+  when: snapraid_stat_result.stat.exists == False 
+
+- name: install snapraid - copy binary
+  become_user: "{{ snapraid_owner }}"
+  copy:
+    src: '{{ snapraid_src_dir }}/{{ snapraid_file }}/snapraid'
+    dest: "{{ snapraid_bin_dir }}/snapraid"
+    mode: 0755
+    owner: "{{ snapraid_owner }}"
+    group: "{{ snapraid_group }}"
+    remote_src: true

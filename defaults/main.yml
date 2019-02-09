@@ -1,0 +1,37 @@
+---
+# snapraid version can be defined as a release number (11.3) or "latest"
+snapraid_version: "11.3"
+snapraid_path_prefix: /opt/snapraid
+snapraid_src_dir: "{{ snapraid_path_prefix }}/src/snapraid"
+snapraid_bin_dir: "{{ snapraid_path_prefix }}/bin"
+snapraid_file: "snapraid-{{ snapraid_version }}"
+snapraid_owner: "root"
+snapraid_group: "root"
+
+snapraid_packages: []
+
+snapraid_build_conf: true
+snapraid_conf_path: /etc/snapraid.conf
+snapraid_conf_content_file: /var/lib/snapraid/snapraid.content
+snapraid_conf_disable_hidden: False
+snapraid_conf_pool: False
+snapraid_conf_blocksize: 0
+snapraid_conf_hashsize: 0
+snapraid_conf_autosave: 0
+snapraid_conf_parity_files: []
+  # - /mnt/parity1/snapraid.parity
+  # - /mnt/parity2/snapraid.2-parity
+snapraid_conf_disks: []
+  # - name: disk1
+  #   mount: /mnt/disk1
+  #   content_file: true
+  # - name: disk2
+  #   mount: /mnt/disk2
+  # - name: disk3
+  #   mount: /mnt/disk3
+  #   content_file: true
+  #   state: absent
+snapraid_conf_exclude: 
+  - '*.unrecoverable'
+  - /tmp/
+  - /lost+found/

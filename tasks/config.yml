@@ -1,0 +1,6 @@
+---
+- name: Create snapraid config file
+  template:
+    src: "snapraid.conf.j2"
+    dest: "{{ snapraid_conf_path }}"
+    mode: "0640"
