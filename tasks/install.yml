@@ -71,3 +71,13 @@
     owner: "{{ snapraid_owner }}"
     group: "{{ snapraid_group }}"
     remote_src: true
+
+- name: Download snapraid runner
+  get_url:
+    url: "https://raw.githubusercontent.com/Chronial/snapraid-runner/{{ 'master' if snapraid_runner_version == 'latest' else snapraid_runner_version }}/snapraid-runner.py"
+    dest: "{{ snapraid_bin_dir}}/snapraid-runner.py"
+    force: True
+    mode: 0755
+    owner: "{{ snapraid_owner }}"
+    group: "{{ snapraid_group }}"
+  when: snapraid_install_runner

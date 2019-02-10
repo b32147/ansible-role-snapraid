@@ -4,3 +4,10 @@
     src: "snapraid.conf.j2"
     dest: "{{ snapraid_conf_path }}"
     mode: "0640"
+
+- name: Create snapraid-runer config file
+  template:
+    src: "snapraid-runner.conf.j2"
+    dest: "{{ snapraid_runner_conf_path }}"
+    mode: "0640"
+  when: snapraid_install_runner

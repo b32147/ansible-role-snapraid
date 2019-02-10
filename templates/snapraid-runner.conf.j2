@@ -1,0 +1,42 @@
+[snapraid]
+; path to the snapraid executable (e.g. /bin/snapraid)
+executable = {{ snapraid_bin_dir }}/snapraid
+; path to the snapraid config to be used
+config = {{ snapraid_conf_path }}
+; abort operation if there are more deletes than this, set to -1 to disable
+deletethreshold = {{ snapraid_runner_deletethreshold }}
+; if you want touch to be ran each time
+touch = {{ 'true' if snapraid_runner_touch else 'false' }}
+
+[logging]
+; logfile to write to, leave empty to disable
+file = {{ snapraid_runner_log_file }}
+; maximum logfile size in KiB, leave empty for infinite
+maxsize = {{ snapraid_runner_log_maxsize }}
+
+[email]
+; when to send an email, comma-separated list of [success, error]
+sendon = {{ snapraid_runner_email_sendon }}
+; set to false to get full programm output via email
+short = {{ 'true' if snapraid_runner_email_short else 'false' }}
+subject = {{ snapraid_runner_email_subject }}
+from = {{ snapraid_runner_email_from }}
+to = {{ snapraid_runner_email_to }}
+; maximum email size in KiB
+maxsize = {{ snapraid_runner_email_maxsize }}
+
+[smtp]
+host = {{ snapraid_runner_smtp_host }}
+; leave empty for default port
+port = {{ snapraid_runner_smtp_port }}
+; set to "true" to activate
+ssl = {{ 'true' if snapraid_runner_smtp_ssl else 'false' }}
+tls = {{ 'true' if snapraid_runner_smtp_tls else 'false' }}
+user = {{ snapraid_runner_smtp_user }}
+password = {{ snapraid_runner_smtp_password }}
+
+[scrub]
+; set to true to run scrub after sync
+enabled = {{ 'true' if snapraid_runner_scrub else 'false' }}
+percentage = {{ snapraid_runner_scrub_percentage }}
+older-than = {{ snapraid_runner_scrub_older_than }}

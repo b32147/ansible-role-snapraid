@@ -35,3 +35,27 @@ snapraid_conf_exclude:
   - '*.unrecoverable'
   - /tmp/
   - /lost+found/
+
+snapraid_install_runner: True
+# Use latest or v0.3
+snapraid_runner_version: latest
+snapraid_runner_conf_path: /etc/snapraid-runner.conf
+snapraid_runner_deletethreshold: 40
+snapraid_runner_touch: False
+snapraid_runner_log_file: /var/log/snapraid.log
+snapraid_runner_log_maxsize: 5000
+snapraid_runner_email_sendon: 'success,error'
+snapraid_runner_email_short: True
+snapraid_runner_email_subject: '[SnapRAID] Status Report:'
+snapraid_runner_email_to: ''
+snapraid_runner_email_from: ''
+snapraid_runner_email_maxsize: 500
+snapraid_runner_smtp_host: ''
+snapraid_runner_smtp_port: ''
+snapraid_runner_smtp_ssl: ''
+snapraid_runner_smtp_tls: ''
+snapraid_runner_smtp_user: ''
+snapraid_runner_smtp_password: ''
+snapraid_runner_scrub: False
+snapraid_runner_scrub_percentage: 12
+snapraid_runner_scrub_older_than: 10
