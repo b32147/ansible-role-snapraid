@@ -17,6 +17,7 @@
   with_items:
     - "{{ snapraid_src_dir }}"
     - "{{ snapraid_bin_dir }}"
+    - "{{ snapraid_conf_content_file | dirname }}"
   loop_control:
     loop_var: dirpath
 
