@@ -6,10 +6,6 @@
 {% for parity_file in snapraid_conf_parity_files %}
 {% if loop.index == 1 %}
 parity {{parity_file}}
-{% else %}
-{{ loop.index }}-parity {{parity_file}}
-{% endif %}
-{% endfor %}
 
 # Defines the files to use as additional parity storage.
 # If specified, they enable the multiple failures protection
@@ -18,11 +14,10 @@ parity {{parity_file}}
 # protection required. Start from 2-parity, and follow in order.
 # It must NOT be in a data disk
 # Format: "X-parity FILE [,FILE] ..."
-#2-parity /mnt/diskq/snapraid.2-parity
-#3-parity /mnt/diskr/snapraid.3-parity
-#4-parity /mnt/disks/snapraid.4-parity
-#5-parity /mnt/diskt/snapraid.5-parity
-#6-parity /mnt/disku/snapraid.6-parity
+{% else %}
+{{ loop.index }}-parity {{parity_file}}
+{% endif %}
+{% endfor %}
 
 # Defines the files to use as content list
 # You can use multiple specification to store more copies
@@ -33,7 +28,7 @@ parity {{parity_file}}
 content {{ snapraid_conf_content_file }}
 {% for disk in snapraid_conf_disks if disk['state'] is not defined or disk['state'] == 'present' %}
 {% if disk['content_file'] is defined and disk['content_file'] %}
-content {{ disk['mount'] }}/snapraid.content
+content {{ disk['content_file'] }}
 {% endif %}
 {% endfor %}
 

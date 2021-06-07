@@ -1,11 +1,21 @@
 ---
+- name: Creates snapraid config directory
+  file:
+    path: "{{ snapraid_conf_path | dirname}}"
+    state: directory
+
 - name: Create snapraid config file
   template:
     src: "snapraid.conf.j2"
     dest: "{{ snapraid_conf_path }}"
     mode: "0640"
 
-- name: Create snapraid-runer config file
+- name: Creates snapraid runner config directory
+  file:
+    path: "{{ snapraid_runner_conf_path | dirname}}"
+    state: directory
+
+- name: Create snapraid-runner config file
   template:
     src: "snapraid-runner.conf.j2"
     dest: "{{ snapraid_runner_conf_path }}"

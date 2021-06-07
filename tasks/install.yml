@@ -36,42 +36,67 @@
       check_mode: no
   when: snapraid_version == 'latest'
 
-- name: install snapraid - decompress package
-  unarchive:
-    src: "https://github.com/amadvance/snapraid/releases/download/v{{ snapraid_version }}/{{ snapraid_file }}.tar.gz"
-    dest: "{{ snapraid_src_dir}}"
-    copy: no
-    creates: '{{ snapraid_src_dir}}/{{ snapraid_file }}'
-  become_user: "{{ snapraid_owner }}"
-
-- name: Check if the binary already exists
+- name: check if snapraid is installed
   stat:
-    path: '{{ snapraid_src_dir }}/{{ snapraid_file }}/snapraid'
-  register: snapraid_stat_result
+    path: '{{ snapraid_bin_dir }}/snapraid'
+  register: installed_stat_result
 
-- name: Configure source
-  become_user: "{{ snapraid_owner }}"
-  shell: './configure'
-  args:
-    chdir: '{{ snapraid_src_dir }}/{{ snapraid_file }}'
-    creates: 'Makefile'
-  when: snapraid_stat_result.stat.exists == False 
+- name: check version of installed snapraid
+  command: "{{ snapraid_bin_dir }}/snapraid --version"
+  register: installed_version_result
+  when: "installed_stat_result.stat.exists"
+  changed_when: False
+  failed_when: False
 
-- name: Build the source
-  become_user: "{{ snapraid_owner }}"
-  make:
-    chdir: '{{ snapraid_src_dir }}/{{ snapraid_file }}'
-  when: snapraid_stat_result.stat.exists == False 
+- name: install/reinstall snapraid if not installed or current version is older
+  block:
 
-- name: install snapraid - copy binary
-  become_user: "{{ snapraid_owner }}"
-  copy:
-    src: '{{ snapraid_src_dir }}/{{ snapraid_file }}/snapraid'
-    dest: "{{ snapraid_bin_dir }}/snapraid"
-    mode: 0755
-    owner: "{{ snapraid_owner }}"
-    group: "{{ snapraid_group }}"
-    remote_src: true
+  - name: install snapraid - decompress package
+    unarchive:
+      src: "https://github.com/amadvance/snapraid/releases/download/v{{ snapraid_version }}/{{ snapraid_file }}.tar.gz"
+      dest: "{{ snapraid_src_dir}}"
+      copy: no
+      creates: '{{ snapraid_src_dir}}/{{ snapraid_file }}'
+    become_user: "{{ snapraid_owner }}"
+
+  - name: Check if the binary already exists
+    stat:
+      path: '{{ snapraid_src_dir }}/{{ snapraid_file }}/snapraid'
+    register: snapraid_stat_result
+
+  - name: Configure source
+    become_user: "{{ snapraid_owner }}"
+    shell: './configure'
+    args:
+      chdir: '{{ snapraid_src_dir }}/{{ snapraid_file }}'
+      creates: 'Makefile'
+    when: snapraid_stat_result.stat.exists == False
+
+  - name: Build the source
+    become_user: "{{ snapraid_owner }}"
+    make:
+      chdir: '{{ snapraid_src_dir }}/{{ snapraid_file }}'
+    when: snapraid_stat_result.stat.exists == False
+
+  - name: Check the build
+    become_user: "{{ snapraid_owner }}"
+    make:
+      chdir: '{{ snapraid_src_dir }}/{{ snapraid_file }}'
+      target: 'check'
+    register: snapraid_check_result
+    when: snapraid_stat_result.stat.exists == False
+
+  - name: install snapraid - copy binary
+    become_user: "{{ snapraid_owner }}"
+    copy:
+      src: '{{ snapraid_src_dir }}/{{ snapraid_file }}/snapraid'
+      dest: "{{ snapraid_bin_dir }}/snapraid"
+      mode: 0755
+      owner: "{{ snapraid_owner }}"
+      group: "{{ snapraid_group }}"
+      remote_src: true
+
+  when: "not installed_stat_result.stat.exists or snapraid_version not in installed_version_result.stdout"
 
 - name: Download snapraid runner
   get_url:

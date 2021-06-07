@@ -1,9 +1,9 @@
 ---
-# snapraid version can be defined as a release number (11.3) or "latest"
-snapraid_version: "11.3"
-snapraid_path_prefix: /opt/snapraid
-snapraid_src_dir: "{{ snapraid_path_prefix }}/src/snapraid"
-snapraid_bin_dir: "{{ snapraid_path_prefix }}/bin"
+# snapraid version can be defined as a release number (11.5) or "latest"
+snapraid_version: "11.5"
+snapraid_path_prefix: /tmp/snapraid
+snapraid_src_dir: "{{ snapraid_path_prefix }}/src"
+snapraid_bin_dir: "/usr/local/bin"
 snapraid_file: "snapraid-{{ snapraid_version }}"
 snapraid_owner: "root"
 snapraid_group: "root"
@@ -11,7 +11,7 @@ snapraid_group: "root"
 snapraid_packages: []
 
 snapraid_build_conf: true
-snapraid_conf_path: /etc/snapraid.conf
+snapraid_conf_path: /etc/snapraid/snapraid.conf
 snapraid_conf_content_file: /var/lib/snapraid/snapraid.content
 snapraid_conf_disable_hidden: False
 snapraid_conf_pool: False
@@ -24,14 +24,14 @@ snapraid_conf_parity_files: []
 snapraid_conf_disks: []
   # - name: disk1
   #   mount: /mnt/disk1
-  #   content_file: true
+  #   content_file: /mnt/disk1/snapraid.content
   # - name: disk2
   #   mount: /mnt/disk2
   # - name: disk3
   #   mount: /mnt/disk3
-  #   content_file: true
+  #   content_file: /mnt/disk3/snapraid.content
   #   state: absent
-snapraid_conf_exclude: 
+snapraid_conf_exclude:
   - '*.unrecoverable'
   - /tmp/
   - /lost+found/
@@ -39,7 +39,7 @@ snapraid_conf_exclude:
 snapraid_install_runner: True
 # Use latest or v0.3
 snapraid_runner_version: latest
-snapraid_runner_conf_path: /etc/snapraid-runner.conf
+snapraid_runner_conf_path: /etc/snapraid/snapraid-runner.conf
 snapraid_runner_deletethreshold: 40
 snapraid_runner_touch: False
 snapraid_runner_log_file: /var/log/snapraid.log
